@@ -1,0 +1,4 @@
+dataset,n,all_match,match_rate,mean_brute_weight,mean_exact_weight,mean_checked_subsets
+A,5,True,1.0,1.0,1.0,1024.0
+B,5,True,1.0,6.0,6.0,1024.0
+C,5,True,1.0,2.0,2.0,1024.0
