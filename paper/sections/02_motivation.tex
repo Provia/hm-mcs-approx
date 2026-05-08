@@ -1,0 +1,37 @@
+\section{Motivation}
+
+\subsection{Type Errors in Hindley--Milner Systems}
+
+Hindley--Milner type inference operates by generating a set of type-equality
+constraints from a program's syntax and solving them via Robinson unification~\cite{damas1982}.
+When the program is ill-typed, this constraint set is unsatisfiable, and the compiler
+must report an error location.
+Standard implementations report the first unification failure encountered during
+constraint solving, a location that is structurally determined by traversal order
+rather than by any minimality criterion.
+As a consequence, the reported location may not correspond to the actual source of the
+type error, making error messages brittle and difficult to act on~\cite{pavlinovic2014}.
+
+\subsection{The Algorithmic Significance}
+
+A principled alternative is to identify a minimum-weight subset of constraints whose
+removal restores satisfiability.
+This is a combinatorial optimization problem.
+Via the MCS--MUS hitting-set duality established by Marques-Silva et al.~\cite{marques2013},
+this problem is directly related to finding a minimum-weight hitting set over the family
+of Minimal Unsatisfiable Subsets of the constraint system.
+Existing work addresses related localization problems using exact MaxSMT solvers~\cite{pavlinovic2014,kopinsky2024}
+or MCS enumeration~\cite{fu2024}, both of which provide principled answers but can become
+expensive as instance size grows.
+The literature reviewed here does not provide polynomial-time approximation guarantees
+or approximation-hardness results for this problem in the HM setting.
+
+\subsection{Why Approximation Theory Matters Here}
+
+Exact methods can be impractical for large programs, while heuristics without quality
+guarantees offer no formal assurance on solution quality.
+A polynomial-time approximation algorithm with a provable ratio would fill this gap by
+trading optimality for scalability in a controlled, quantifiable way.
+This paper takes a first empirical step: we implement a greedy approximation algorithm,
+evaluate its approximation ratio against an exact baseline on synthetic HM-style
+instances, and diagnose which structural features of those instances drive its behaviour.
