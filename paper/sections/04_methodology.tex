@@ -39,17 +39,21 @@ w_i = 1 + \max(\mathrm{depth}(\tau_i^L), \mathrm{depth}(\tau_i^R)).
 \]
 Fillers are randomly generated type expressions up to depth~$3$.
 
-\subsection{Worked Example: Shared-Variable Overlap}
 
-Case Study~2 illustrates the intended structure of Dataset~B using the program
-\texttt{let x = 5 in (x ++ "hello", x \&\& True)}.
-The variable $x$ receives a type variable $\tau$, and its three uses impose
-the incompatible constraints $\tau = \texttt{Int}$, $\tau = [\texttt{Char}]$,
-and $\tau = \texttt{Bool}$.
-The resulting MUSes overlap on the same variable $\tau$.
-This example supports the interpretation that Dataset~B contains genuine MUS
-overlap, even though the overlap is too regular to produce an approximation gap.
-
+\paragraph{Worked example.}
+Consider \texttt{let x = 5 in (x ++ "hello", x \&\& True)}. The variable
+\texttt{x} receives a fresh type variable $\tau$, and its three occurrences
+impose
+\[
+c_0:\ \tau = \mathtt{Int}, \qquad
+c_1:\ \tau = [\mathtt{Char}], \qquad
+c_2:\ \tau = \mathtt{Bool}.
+\]
+Each pair $\{c_i, c_j\}$ is a MUS, yielding three pairwise MUSes that overlap
+on the shared variable $\tau$. This matches the planted structure of
+Dataset~B and supports the interpretation that B contains genuine MUS
+overlap, even though that overlap is too regular to produce an approximation
+gap.
 \subsection{Greedy Approximation Algorithm}
 
 We implement a lazy MUS-guided greedy hitting-set algorithm.

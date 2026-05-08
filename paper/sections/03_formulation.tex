@@ -20,11 +20,18 @@ When $C$ is unsatisfiable, a \emph{Minimal Correction Subset} is a
 subset $M \subseteq C$ such that $C \setminus M$ is satisfiable, and no proper
 subset of $M$ has this property~\cite{marques-silva2013}.
 Each element of an MCS is a candidate error location.
-In the example from Case Study~1, \texttt{let f x = x + 1 in f True}, the
-constraints $c_0\colon \alpha = \texttt{Int}$ and
-$c_1\colon \alpha = \texttt{Bool}$ form the sole MUS.
-There are two minimum-weight correction subsets, $\{c_0\}$ and $\{c_1\}$,
-each of total weight $1.0$.
+
+\paragraph{Worked example.} Consider the program \texttt{let f x = x + 1 in f True}. HM inference
+generates type-equality constraints
+\[
+c_0:\ \alpha = \mathtt{Int}, \qquad
+c_1:\ \alpha = \mathtt{Bool},
+\]
+together with satisfiable constraints binding intermediate variables in the
+function definition. The set $\{c_0, c_1\}$ is the unique MUS, since
+unification of $\mathtt{Int}$ and $\mathtt{Bool}$ fails. With unit weights,
+either $\{c_0\}$ or $\{c_1\}$ is a minimum-weight correction subset of total
+weight $1.0$.
 
 The \emph{Minimum-Weight MCS} problem asks:
 \begin{quote}
