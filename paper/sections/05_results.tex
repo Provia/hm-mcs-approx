@@ -1,0 +1,112 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Approximation Ratio}
+
+Across all 300~instances---3~datasets $\times$ 5~sizes $\times$ 20~seeds---the
+greedy algorithm matched the exact Z3 solution on every instance.
+The approximation ratio $\rho = w_{\text{greedy}} / w_{\text{exact}}$ was
+exactly $1.00$ in all cases, with zero variance.
+This result holds uniformly across $|C| \in \{10, 20, 50, 100, 200\}$ and is
+not an artefact of solver failure: the exact success rate was $1.0$ throughout,
+and brute-force enumeration independently confirmed Z3's optima on all 15
+small instances ($|C| = 10$).
+
+A ratio of $1.00$ on every instance does not imply greedy is generally optimal.
+Rather, it reflects the structural simplicity of the three generator families,
+as we analyse below.
+
+\subsection{Structural Explanation by Dataset}
+
+\paragraph{Dataset A.}
+Each instance contains a single MUS of size~2 with equal-weight constraints.
+Greedy discovers this MUS in one iteration, selects either element, and halts.
+Because the MUS has only two elements of equal weight, any singleton correction
+subset is optimal; greedy cannot diverge from exact.
+Mean greedy iterations: $1.00$; mean MUSes discovered: $1.00$.
+
+\paragraph{Dataset B.}
+Each instance plants 4~constraints on a shared variable $x$ with weights
+$1.0, 2.0, 3.0, 4.0$, producing $\binom{4}{2} = 6$ pairwise MUSes in the
+planted core.
+The lazy greedy run discovers 5~MUSes before the residual instance becomes
+satisfiable.
+In this generated clique-like structure, the greedy choices coincide with the
+exact optimum.
+Mean greedy iterations: $5.00$; mean MUSes discovered: $5.00$, constant across
+sizes because the planted conflict structure does not grow with $|C|$.
+Greedy runtime ($35.45$\,ms mean) exceeds exact runtime ($13.19$\,ms mean) on
+this dataset because greedy performs 5~sequential MUS-extraction passes while
+Z3 solves the optimisation encoding in a single call.
+
+\paragraph{Dataset C.}
+Each instance plants a constructor mismatch: $f$ is forced to be both a
+function type and a list type.
+The resulting MUS contains exactly the two conflicting constraints
+(\texttt{C\_shape\_function} and \texttt{C\_conflict\_list}); the other planted
+constraints ($\alpha = \texttt{Int}$, $\beta = \texttt{Bool}$) are consistent
+with either resolution and do not participate in a minimal conflict.
+Greedy discovers this MUS in one iteration and removes one of its elements.
+Mean greedy iterations: $1.00$; mean MUSes discovered: $1.00$.
+
+\subsection{Runtime Scaling}
+
+Greedy runtime grows with $|C|$ across all datasets, driven by the cost of
+unification checks during MUS extraction (Figure~\ref{fig:runtime}).
+On Dataset~A, mean greedy runtime increases from $2.94$\,ms at $|C|=10$ to
+$25.41$\,ms at $|C|=200$.
+Dataset~C shows a similar profile ($1.41$\,ms to $30.61$\,ms).
+Dataset~B is slower due to its 5-iteration structure, rising from $5.89$\,ms
+to $92.64$\,ms.
+Exact Z3 runtime is comparatively stable across sizes and datasets
+($12$--$13$\,ms mean), suggesting that, on these small synthetic instances,
+the fixed overhead of the Z3 optimisation call dominates the additional filler
+constraints.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figure1_runtime_scaling}
+  \caption{Runtime scaling of greedy and exact Z3 baselines on log--log axes.
+    Dataset~B is consistently slower for greedy due to its 5-iteration MUS
+    discovery structure; Datasets~A and~C converge toward exact runtime at
+    larger $|C|$.}
+  \label{fig:runtime}
+\end{figure}
+
+Figure~\ref{fig:overhead} shows that greedy overhead relative to exact is
+explained by MUS discovery count.
+Datasets~A and~C discover exactly 1~MUS per instance regardless of $|C|$,
+keeping the relative runtime at or below $1.0$ for larger sizes.
+Dataset~B discovers exactly 5~MUSes per instance, one per greedy iteration,
+and its relative runtime grows from about $2.0\times$ at $|C|=10$ to about
+$2.8\times$ at $|C|=200$.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figure2_runtime_ratio_mus_count}
+  \caption{(a)~Greedy runtime relative to exact Z3. Dataset~B consistently
+    exceeds $2\times$ owing to 5 sequential MUS-extraction passes.
+    (b)~MUSes discovered by lazy greedy per instance. MUS count is constant
+    across all sizes for each dataset, confirming that conflict complexity
+    does not scale with $|C|$ in the current generators.}
+  \label{fig:overhead}
+\end{figure}
+
+\subsection{Interpretation: Generator Simplicity, Not Algorithm Optimality}
+
+The absence of an approximation gap is a property of the generators, not a
+general property of the greedy algorithm.
+All three datasets produce MUS hypergraphs that are structurally easy for
+weighted greedy: Dataset~A has a unique two-element MUS with equal weights;
+Dataset~B has a regular clique-like structure on one variable; Dataset~C
+reduces to a two-element MUS after constraint propagation.
+
+Adversarial instances for Set-Cover-style greedy require MUSes with disjoint
+support and carefully constructed weights so that the greedy choice at each
+step is locally cheap but globally suboptimal.
+None of the three generator families produce such structure, because the
+planted conflicts are confined to one or two variables with straightforward
+weight assignments.
+Constructing generators that force a gap---for example, by planting multiple
+disjoint MUSes with cross-cutting weight gradients inspired by the Set Cover
+hardness template of~\cite{feige1998}---is a natural direction for future work.

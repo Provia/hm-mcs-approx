@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\usepackage[
+  backend=biber,
+  style=authoryear,
+  sorting=nyt
+]{biblatex}
+
+\graphicspath{{../figures/}}
+\addbibresource{refs.bib}
+
+\title{Greedy Approximation for Type Error Correction:\\
+A Diagnostic Study on HM-Style Constraint Systems}
+\author{Kevin Chen\\COMP4600/8460 Advanced Algorithms}
+\date{Semester 1, 2026}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/01_abstract}
+\input{sections/02_motivation}
+\input{sections/03_formulation}
+\input{sections/04_methodology}
+\input{sections/05_results}
+\input{sections/06_conclusion}
+
+\printbibliography
+
+\end{document}
