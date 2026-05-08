@@ -1,0 +1,105 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Synthetic Instance Generators}
+
+We evaluate on three families of synthetic HM-style constraint systems, each
+designed to isolate a distinct structural property. We use synthetic generators
+to keep the source, conflict structure, and weighting scheme fully reproducible.
+
+\paragraph{Dataset A: Single Planted Conflict.}
+Each instance contains exactly one conflict pair: two constraints binding the
+same fresh type variable $\alpha$ to incompatible base types,
+$\alpha = \texttt{Int}$ and $\alpha = \texttt{Bool}$, both with weight~$1.0$.
+The remaining $|C| - 2$ constraints are satisfiable fillers over independent
+fresh variables, including base, list, and function types.
+This yields a unique MUS of size~2 and two symmetric minimum-weight correction
+subsets, each of weight~$1.0$.
+
+\paragraph{Dataset B: Overlapping Conflicts.}
+Each instance plants $k = 4$ constraints binding a shared variable
+$x$ to mutually incompatible types $\{\texttt{Int}, \texttt{Bool},
+\texttt{Char}, \texttt{String}\}$ with weights $1.0, 2.0, 3.0, 4.0$
+respectively.
+Every pair of these constraints forms a MUS, yielding $\binom{k}{2} = 6$
+pairwise MUSes, all involving the same shared variable.
+The satisfiable fillers are appended as in Dataset~A.
+This family tests whether MUS overlap alone is enough to produce an
+approximation gap.
+
+\paragraph{Dataset C: HM-Shaped Constructor Mismatch.}
+Each instance plants a conflict between a function-type shape and a list-type
+shape on the same variable $f$: the constraints
+$f = [\alpha] \to \beta$, $\alpha = \texttt{Int}$, $\beta = \texttt{Bool}$,
+and $f = [\texttt{Char}]$ are inconsistent because $f$ cannot simultaneously
+be a function type and a list type.
+Constraint weights are derived from type-expression depth:
+\[
+w_i = 1 + \max(\mathrm{depth}(\tau_i^L), \mathrm{depth}(\tau_i^R)).
+\]
+Fillers are randomly generated type expressions up to depth~$3$.
+
+\subsection{Worked Example: Shared-Variable Overlap}
+
+Case Study~2 illustrates the intended structure of Dataset~B using the program
+\texttt{let x = 5 in (x ++ "hello", x \&\& True)}.
+The variable $x$ receives a type variable $\tau$, and its three uses impose
+the incompatible constraints $\tau = \texttt{Int}$, $\tau = [\texttt{Char}]$,
+and $\tau = \texttt{Bool}$.
+The resulting MUSes overlap on the same variable $\tau$.
+This example supports the interpretation that Dataset~B contains genuine MUS
+overlap, even though the overlap is too regular to produce an approximation gap.
+
+\subsection{Greedy Approximation Algorithm}
+
+We implement a lazy MUS-guided greedy hitting-set algorithm.
+At each iteration, the algorithm invokes a MUS finder on the current residual
+constraint set to obtain one MUS~$M$, adds $M$ to the set of discovered MUSes,
+and recomputes a weighted greedy hitting set over all MUSes discovered so far.
+At each greedy hitting-set step, it selects the constraint
+\[
+c^* = \arg\min_c \frac{w_c}{|\{M' : c \in M'\}|},
+\]
+where the denominator counts currently unhit discovered MUSes containing $c$.
+The selected hitting set is removed from the original constraint set, and the
+process repeats until the residual constraint set is satisfiable.
+
+MUS extraction uses an unsatisfiable-core procedure followed by deletion-based
+shrinking: constraints are tentatively removed one at a time and kept removed
+if the subset remains unsatisfiable.
+Satisfiability at each step is checked by Robinson unification over the
+type-equality constraint system.
+The full-information weighted hitting-set greedy algorithm has the standard
+$H_d$ approximation bound, where $d$ is the maximum set size.
+Our implementation uses this greedy rule lazily on discovered MUSes and is
+therefore evaluated empirically against the exact baseline.
+
+\subsection{Exact Baseline}
+
+We use Z3's optimisation interface as the exact baseline.
+Each constraint $c_i$ is guarded by a Boolean variable $\mathit{keep}_i$.
+If $\mathit{keep}_i$ is true, the corresponding type equality must hold.
+The objective minimises the total weight of dropped constraints, namely
+constraints for which $\mathit{keep}_i$ is false.
+This returns an exact minimum-weight correction subset for the encoded instance.
+A timeout of 30{,}000\,ms per instance is applied; all 300~instances completed
+within budget.
+
+\subsection{Brute-Force Sanity Check}
+
+To validate the Z3 baseline, we run exhaustive brute-force search on small
+instances with $|C| = 10$.
+This sanity check covers 15~instances, from 5~seeds across the 3~datasets.
+The brute-force solver enumerates all $2^{|C|}$ candidate correction subsets
+and returns the minimum-weight one.
+Z3 and brute force agree on optimal weight for all 15~instances.
+
+\subsection{Experimental Grid}
+
+The full experiment spans 3~datasets, 5~sizes
+$|C| \in \{10, 20, 50, 100, 200\}$, and 20~seeds, giving 300~instances.
+For each instance we record greedy weight, exact weight, approximation ratio,
+greedy and exact wall-clock runtime, number of greedy iterations, number of
+MUSes discovered, MUS sizes, overlap measure, and weight statistics.
+Code and results are available at
+\url{https://github.com/Provia/hm-mcs-approx}.
