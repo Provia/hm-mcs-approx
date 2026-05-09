@@ -103,15 +103,13 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Dependencies: `z3-solver`, `numpy`, `pandas`, `matplotlib`, `pytest`.
-
 ---
 
 ## Reproducing the experiments
 
 All experiments are deterministic given the seeds in `experiments/`.
 
-**1. Run the test suite** (fast, ~10 seconds):
+**1. Run the test suite**:
 
 ```bash
 pytest
@@ -120,7 +118,7 @@ pytest
 This includes a 50-instance fuzz check confirming that the Z3 exact baseline
 agrees with brute-force enumeration on small instances.
 
-**2. Run the sanity experiment** (small end-to-end check, ~30 seconds):
+**2. Run the sanity experiment**:
 
 ```bash
 python experiments/sanity.py
@@ -129,7 +127,7 @@ python experiments/sanity.py
 Outputs `results/sanity_results.csv` and an aggregate summary printed to
 stdout. Useful for verifying the pipeline before running the full grid.
 
-**3. Run the main experiment** (full 300-instance grid, a few minutes):
+**3. Run the main experiment**:
 
 ```bash
 python experiments/run_main.py
