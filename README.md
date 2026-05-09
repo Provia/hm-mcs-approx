@@ -23,7 +23,7 @@ The project asks an empirical question:
 > with an exact baseline, and which structural properties of the instances
 > drive the approximation behaviour?
 
-We implement a lazy MUS-guided greedy algorithm, an exact Z3 Optimize baseline,
+I implement a lazy MUS-guided greedy algorithm, an exact Z3 Optimize baseline,
 a brute-force sanity checker, and three families of synthetic HM-style
 generators, then evaluate them on 300 instances spanning sizes
 |C| ∈ {10, 20, 50, 100, 200} and 20 random seeds per cell.
@@ -189,7 +189,7 @@ generator families show up.
 ## Code design notes
 
 - **`solver.py` uses Robinson unification, not Z3.** Satisfiability is the
-  hot path inside the greedy loop, so we use a direct unification
+  hot path inside the greedy loop, so I use a direct unification
   implementation; Z3 is reserved for the exact baseline and unsat-core
   extraction.
 
