@@ -1,7 +1,7 @@
 # hm-mcs-approx
 
 An empirical study of greedy approximation for **Minimum-Weight Minimum
-Correction Subset (MWMCS)** on synthetic Hindley–Milner-style type-equality
+Correction Subset** on synthetic Hindley–Milner-style type-equality
 constraint systems.
 
 This repository accompanies the report submitted as Deliverable D1 for
