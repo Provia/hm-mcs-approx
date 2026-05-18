@@ -12,3 +12,13 @@ results/*.svg
 .DS_Store
 .vscode/
 .idea/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
