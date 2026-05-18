@@ -1,17 +1,20 @@
 \begin{abstract}
 Type error localization in Hindley--Milner systems can be formulated as a
-minimum-weight Minimum Correction Subset problem over unsatisfiable
-type-equality constraints. This project studies whether a lazy MUS-guided
-greedy hitting-set algorithm gives useful approximation behaviour on
-synthetic HM-style constraint systems. We implement the greedy algorithm, an
-exact Z3 Optimize baseline, and a brute-force sanity checker for tiny
-instances. The evaluation covers 300 generated instances across three
-structural families: single planted conflicts, overlapping conflicts on a
-shared type variable, and constructor-level function--list mismatches. Across
-all instances, greedy matches the exact optimum with approximation ratio
-$1.0$. This does not show general greedy optimality. Instead, it diagnoses the
-current generators as structurally simple: their MUS hypergraphs do not
-exercise the standard worst-case behaviour of greedy hitting set. Runtime
-results further show that lazy greedy overhead is driven more by MUS discovery
-count than by total constraint count.
+minimum-weight Minimum Correction Subset (MWMCS) problem over unsatisfiable
+type-equality constraints. We empirically study a lazy MUS-guided greedy
+hitting-set approximation against an exact Z3 Optimize baseline on 300
+synthetic instances spanning three structural families: single planted
+conflicts, overlapping conflicts on a shared type variable, and constructor-level
+function--list mismatches. Across all instances, the greedy algorithm matches
+the exact optimum (approximation ratio uniformly $1.0$), and brute-force
+enumeration independently validates the Z3 baseline on small instances. We
+do not interpret this as evidence that greedy is generally optimal; rather,
+we identify the structural reasons each generator family fails to exercise
+the standard worst-case behaviour of greedy hitting set. Runtime analysis
+shows that lazy greedy overhead is driven by the number of MUSes discovered
+rather than the total constraint count, producing a stable $2$--$3\times$
+slowdown on the dataset with overlapping conflicts. The main contribution
+is a diagnostic characterisation of when synthetic HM-style generators do
+and do not produce approximation gaps, which motivates future work on
+adversarial generators inspired by Set Cover hardness templates.
 \end{abstract}

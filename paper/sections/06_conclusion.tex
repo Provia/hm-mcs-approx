@@ -1,0 +1,46 @@
+\section{Conclusion and Discussion}
+
+This paper studied a lazy MUS-guided greedy hitting-set algorithm for the
+Minimum-Weight Minimum Correction Subset (MWMCS) problem on synthetic
+HM-style type-equality constraint systems. Across 300 instances spanning three
+generator families and five sizes, the greedy algorithm matched the exact Z3
+optimum on every instance, with approximation ratio uniformly equal to one.
+The brute-force baseline independently confirmed the Z3 optima on small
+instances. Runtime analysis showed that lazy greedy overhead is driven by the
+number of MUSes discovered rather than by the total constraint count: Datasets
+A and C, each with one MUS per instance, ran at or below exact runtime, while
+Dataset~B's five-iteration loop produced a consistent $2$--$3\times$ slowdown
+that was stable across instance sizes.
+
+\paragraph{Interpretation.}
+The absence of an approximation gap describes the tested instance space, not
+the algorithm. A greedy hitting-set algorithm carries a worst-case bound of
+$1 + \ln d$, where $d$ is the maximum MUS size, and this bound remains
+applicable to instances outside the tested space. The empirical result here
+is that the three synthetic generators produce structurally simple MUS
+hypergraphs---a single small MUS in Datasets A and C, and a regular clique
+on a single shared variable in Dataset~B---on which weighted greedy happens
+to be optimal. The experiment therefore characterises the generators as much
+as it characterises the algorithm.
+
+\paragraph{Limitations.}
+Three limitations should be stated explicitly. First, the synthetic
+generators are HM-shaped rather than HM-derived: they encode plausible
+type-equality structure but were not produced by a real Haskell or OCaml
+compiler. Second, only one greedy variant was evaluated; alternative
+strategies, such as weighted greedy with full MUS enumeration or LP-rounding,
+were not compared. Third, the instance sizes ($|C| \le 200$) are small
+relative to real-world programs, where MUS hypergraph structure is likely
+richer.
+
+\paragraph{Future work.}
+The most direct extension is to construct adversarial generators that
+exercise the worst-case greedy behaviour, for example by planting multiple
+disjoint MUSes with cross-cutting weight gradients in the style of the Set
+Cover hardness template of Feige~\cite{feige1998}. A complementary direction,
+returning to the theoretical question framed in our preliminary
+proposal phase, is to establish whether logarithmic inapproximability
+transfers from Set Cover to MWMCS on HM-derived instance classes, or whether
+the AST-derived structure of HM constraints admits strictly better bounds.
+Empirical evaluation on real type-error corpora, contingent on access to a
+reusable benchmark, remains an open opportunity.
